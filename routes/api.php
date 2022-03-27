@@ -3,8 +3,8 @@
 use App\Models\Tweet;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Validation\ValidationException;
 
 /*
@@ -86,4 +86,24 @@ Route::middleware('auth:sanctum')->post('/logout', function (Request $request) {
     $request->user()->currentAccessToken()->delete();
 
     return response()->json('Logged out',200);
+});
+
+
+Route::post('/register', function (Request $request) {
+    $request->validate([
+        'name' => 'required',
+        'email' => 'required|email|unique:users',
+        'username' => 'required|min:4|unique:users',
+        'password' => 'required|min:6|confirmed',
+    ]);
+
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'username' => $request->username,
+        'password' => Hash::make($request->password),
+
+    ]);
+
+    return response()->json($user, 201);
 });
