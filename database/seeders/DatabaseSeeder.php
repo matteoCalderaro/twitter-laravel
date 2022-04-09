@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name'=> 'matteo',
             'email'=> 'm@m',
+            'avatar'=> 'http://2.gravatar.com/avatar/d359d6b9277ff498cae0048c0a0de383',
         ]);
 
         User::factory(99)

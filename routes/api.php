@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->get('/tweets',function(){
 
     $followers = auth()->user()->follows->pluck('id');
 
-    return Tweet::with('user:id,name,username,avatar')->whereIn('user_id',$followers)->latest()->paginate(10);
+    return Tweet::with('user:id,name,username,avatar')->whereIn('user_id',$followers)->latest()->paginate(50);
 });
 
 Route::get('/tweets/{tweet}',function(Tweet $tweet){
@@ -47,6 +47,11 @@ Route::middleware('auth:sanctum')->post('/tweets',function (Request $request){
         'user_id'=> auth()->id(),
         'body'=> $request->body,
     ]);
+});
+
+Route::middleware('auth:sanctum')->delete('/tweets/{tweet}',function (Tweet $tweet){
+    abort_if($tweet->user->id !== auth()->id(), 403);
+    return response()->json($tweet->delete(),200);
 });
 
 Route::get('/users/{user}',function(User $user){
@@ -102,7 +107,7 @@ Route::post('/register', function (Request $request) {
         'name' => 'required',
         'email' => 'required|email|unique:users',
         'username' => 'required|min:4|unique:users',
-        'password' => 'required|min:6|confirmed',
+        'password' => 'required|min:4|confirmed',
     ]);
 
     $user = User::create([
